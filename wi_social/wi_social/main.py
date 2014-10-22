@@ -15,7 +15,7 @@ def foo():
                 l = l.replace(' ' + user, ' ' + user.replace(" ", "_"))
             res.append(l)
 
-    with open('tmp.txt', 'w+') as f:
+    with open('tmp.txtt', 'w+') as f:
         f.write(''.join(res))
 
 
@@ -46,9 +46,11 @@ for user in names:
         else:
             matrix[-1].append(0)
 
-print(1)
+print("Created matrix.")
 A = np.array(matrix)
+print("Created A.")
 la, v = linalg.eig(A)
+print("Computed eigen-stuff")
 print(la)
 # s = set()
 # for k in di.keys():
