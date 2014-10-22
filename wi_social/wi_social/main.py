@@ -22,7 +22,7 @@ def foo():
 def bar():
     """ Hej """
     d = {}
-    with open('tmp.txt', 'r') as f:
+    with open('tmp.txtt', 'r') as f:
         cur_user = ''
         for line in f.readlines():
             if line.count('user:'):
@@ -35,7 +35,7 @@ def bar():
 foo()
 di = bar()
 
-names = sorted(di.keys())
+names = sorted(di.keys())[:40]
 
 matrix = []
 for user in names:
@@ -46,12 +46,31 @@ for user in names:
         else:
             matrix[-1].append(0)
 
+def calc_laplacian(A):   
+    for i in range(len(A)):
+        A[i] = list(map(lambda x: -x, A[i]))
+        A[i][i] = sum(A[i]) * -1
+
+
+
 print("Created matrix.")
+calc_laplacian(matrix)
 A = np.array(matrix)
+for l in A:
+    print(l)
+
+
+
 print("Created A.")
 la, v = linalg.eig(A)
 print("Computed eigen-stuff")
 print(la)
+
+
+
+
+
+
 # s = set()
 # for k in di.keys():
 #     s = s.union(set(di[k]))
