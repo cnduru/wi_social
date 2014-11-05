@@ -31,6 +31,7 @@
     <Compile Include="sentiment.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="WI8Exercise.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="friendships.txt" />
