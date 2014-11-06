@@ -1,5 +1,6 @@
-from scipy import linalg
+from scipy.sparse import linalg
 import numpy as np
+
 
 def foo():
     users = []
@@ -15,14 +16,14 @@ def foo():
                 l = l.replace(' ' + user, ' ' + user.replace(" ", "_"))
             res.append(l)
 
-    with open('tmp.txtt', 'w+') as f:
+    with open('tmp.txt', 'w+') as f:
         f.write(''.join(res))
 
 
 def bar():
     """ Hej """
     d = {}
-    with open('tmp.txtt', 'r') as f:
+    with open('tmp.txt', 'r') as f:
         cur_user = ''
         for line in f.readlines():
             if line.count('user:'):
@@ -32,10 +33,11 @@ def bar():
 
     return d
 
+
 foo()
 di = bar()
 
-names = sorted(di.keys())[:40]
+names = sorted(di.keys())  #[:100]
 
 matrix = []
 for user in names:
@@ -46,26 +48,36 @@ for user in names:
         else:
             matrix[-1].append(0)
 
-def calc_laplacian(A):   
-    for i in range(len(A)):
-        A[i] = list(map(lambda x: -x, A[i]))
-        A[i][i] = sum(A[i]) * -1
 
+def calc_laplacian(A):
+    for i in range(len(A)):
+        A[i] = list(map(lambda x: float(-x), A[i]))
+        A[i][i] = float(sum(A[i]) * -1)
+    return A
 
 
 print("Created matrix.")
-calc_laplacian(matrix)
-A = np.array(matrix)
-for l in A:
-    print(l)
-
-
-
+A = matrix
+# A = [[0, 1, 1, 0, 0, 0, 0, 0, 0],
+#     [1, 0, 1, 0, 0, 0, 0, 0, 0],
+#     [1, 1, 0, 1, 1, 0, 0, 0, 0],
+#     [0, 0, 1, 0, 1, 1, 1, 0, 0],
+#     [0, 0, 1, 1, 0, 1, 1, 0, 0],
+#     [0, 0, 0, 1, 1, 0, 1, 1, 0],
+#     [0, 0, 0, 1, 1, 1, 0, 1, 0],
+#     [0, 0, 0, 0, 0, 1, 1, 0, 1],
+#     [0, 0, 0, 0, 0, 0, 0, 1, 0]]
+L = calc_laplacian(A)
+L = np.array(L)
 print("Created A.")
-la, v = linalg.eig(A)
+va, ve = linalg.eigs(L, k=2, which='SM', v0=np.array([1, ]*100))
 print("Computed eigen-stuff")
-print(la)
 
+#print(L)
+i = 0
+for e in ve:
+    print(str(e) + ' ' + names[i])
+    i += 1
 
 
 
@@ -73,8 +85,8 @@ print(la)
 
 # s = set()
 # for k in di.keys():
-#     s = s.union(set(di[k]))
-#     s.add(k)
+# s = s.union(set(di[k]))
+# s.add(k)
 # print(len(s))
 # print(len(di))
 #
