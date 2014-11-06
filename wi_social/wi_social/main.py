@@ -1,5 +1,6 @@
 from scipy.sparse import linalg
 import numpy as np
+import pickle
 
 
 def foo():
@@ -57,21 +58,39 @@ def calc_laplacian(A):
 
 
 print("Created matrix.")
-A = matrix
-# A = [[0, 1, 1, 0, 0, 0, 0, 0, 0],
-#     [1, 0, 1, 0, 0, 0, 0, 0, 0],
-#     [1, 1, 0, 1, 1, 0, 0, 0, 0],
-#     [0, 0, 1, 0, 1, 1, 1, 0, 0],
-#     [0, 0, 1, 1, 0, 1, 1, 0, 0],
-#     [0, 0, 0, 1, 1, 0, 1, 1, 0],
-#     [0, 0, 0, 1, 1, 1, 0, 1, 0],
-#     [0, 0, 0, 0, 0, 1, 1, 0, 1],
-#     [0, 0, 0, 0, 0, 0, 0, 1, 0]]
+#A = matrix
+A = [[0, 1, 1, 0, 0, 0, 0, 0, 0],
+    [1, 0, 1, 0, 0, 0, 0, 0, 0],
+    [1, 1, 0, 1, 1, 0, 0, 0, 0],
+    [0, 0, 1, 0, 1, 1, 1, 0, 0],
+    [0, 0, 1, 1, 0, 1, 1, 0, 0],
+    [0, 0, 0, 1, 1, 0, 1, 1, 0],
+    [0, 0, 0, 1, 1, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 1, 0]]
 L = calc_laplacian(A)
 L = np.array(L)
 print("Created A.")
-va, ve = linalg.eigs(L, k=2, which='SM', v0=np.array([1, ]*100))
+
+
 print("Computed eigen-stuff")
+
+
+def get_eigen_vector(L):
+    try:
+        with open('eigenvector.pickle', 'rb') as handle:
+            ve = pickle.load(handle)
+            print('Loaded eigenvector from file')
+    except:
+        print('Calculating eigenvector - may take a while.')
+        va, ve = linalg.eigs(L, k=2, which='SM')#, v0=np.array([1, ]*100))
+
+        with open('eigenvector.pickle', 'wb') as handle:
+            pickle.dump(ve, handle)
+    return ve
+    
+
+ve = get_eigen_vector(L)
 
 #print(L)
 i = 0
