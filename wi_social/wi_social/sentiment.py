@@ -2,16 +2,41 @@ from happyfuntokenizing import Tokenizer
 from math import log
 
 vocabulary = set()
+num_rev_pos = 0
+num_rev_neg = 0
+voc_pos = {}
+voc_neg = {}
 
 class Review:
     t = Tokenizer()
 
     def __init__(self, score, text):
+        global vocabulary
         self.score = score
         self.text = self._negate(self.t.tokenize(text))
 
         # add words from text to global vocabulary
         vocabulary.union(set(self.text))
+        self.__count_sentiments()
+
+    def __count_sentiments(self):
+        global num_rev_pos, num_rev_neg, voc_pos, voc_neg
+        if self.score == 1:
+            num_rev_pos += 1
+            for word in self.text:
+                if word in voc_pos:
+                    voc_pos[word] += 1
+                else:
+                    voc_pos[word] = 1
+        elif self.score == -1:
+            num_rev_neg += 1
+            for word in self.text:
+                if word in voc_neg:
+                    voc_neg[word] += 1
+                else:
+                    voc_neg[word] = 1
+        else:
+            print('Error: Sentiment must be 1 or -1')
 
     def get_score(self):
         return self.score
@@ -97,28 +122,35 @@ def parse_reviews(start_line, end_line):
 # returns the probability of a list of reviews having a given sentiment
 # if you are lost, look in slide 29
 def prob_sentiment(sentiment):
-    nc = 0
-    n = len(review_list)
+    global num_rev_pos, num_rev_neg
+    n = num_rev_pos + num_rev_neg
 
-    for review in review_list:
-        if review.get_score() == sentiment:
-            nc += 1
+    if sentiment == 1:
+        nc = num_rev_pos
+    elif sentiment == -1:
+        nc = num_rev_neg
 
     return (nc + 1)/(n + 2) # 2 is the number of classes (true / false)
 
 # returns probability that a certain word has a given sentiment
 # if you are lost, look in slide 29
 def prob_word_in_sentiment(word, sentiment):
-    nxc = 0 + 1 
-    nc = 0 + len(vocabulary)
+    global voc_pos, voc_neg, vocabulary
 
-    for review in review_list:
-        if review.get_score() == sentiment:
-           nc += 1
-           if review.get_text().count(word):
-               nxc += 1
+    if sentiment == 1:
+        nc = num_rev_pos
+        if word in voc_pos:
+            nxc = voc_pos[word]
+        else:
+            nxc = 0 
+    elif sentiment == -1:
+        nc = num_rev_neg
+        if word in voc_neg:
+            nxc = voc_neg[word]
+        else:
+            nxc = 0
 
-    return nxc / nc
+    return (nxc + 1) / (nc + len(vocabulary))
 
 def log_score (review, sentiment):
     pxc = 1
@@ -136,8 +168,14 @@ def scoreTest(review):
 #### this is where the fun stuff happens!
 
 # parse reviews
+to_be_reviewed = parse_reviews(3000100, 3000100 + 1000000)
+
+vocabulary = set()
+num_rev_pos = 0
+num_rev_neg = 0
+voc_pos = {}
+voc_neg = {}
 review_list = parse_reviews(1, 100000)
-to_be_reviewed = parse_reviews(3000100, 3000100 + 300)
 
 total_hits = 0
 cnt = 0;
@@ -148,7 +186,7 @@ print('                                       ', end='\r')
 
 for rev in to_be_reviewed:
     score = scoreTest(rev)
-
+    
     if(score == rev.get_score()):
         total_hits += 1
 
