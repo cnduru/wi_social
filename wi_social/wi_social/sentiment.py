@@ -47,7 +47,7 @@ class Review:
             for word in self.text:
                 if word in voc_3:
                     voc_3[word] += 1
-        else:
+                else:
                     voc_3[word] = 1
         elif self.score == 4:
             num_rev_4 += 1
@@ -200,7 +200,6 @@ def prob_word_in_sentiment(word, sentiment):
         return 0
 
     return (nxc + 1) / (nc + len(vocabulary))
-
 
 def log_score (review, sentiment):
     pxc = 1
