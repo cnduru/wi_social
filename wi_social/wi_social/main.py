@@ -37,10 +37,9 @@ def bar():
 
 foo()
 di = bar()
-
-names = sorted(di.keys())  #[:100]
-
 #names = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+names = sorted(di.keys())#[:2000]
 
 matrix = []
 for user in names:
@@ -79,54 +78,59 @@ print("Computed eigen-stuff")
 
 
 def get_eigen_vector(L):
-    try:
-        with open('eigenvector.pickle', 'rb') as handle:
-            ve = pickle.load(handle)
-            print('Loaded eigenvector from file')
-    except:
-        print('Calculating eigenvector - may take a while.')
-        va, ve = linalg.eigs(L, k=2, which='SM', v0=np.array([1, ]*len(names)))
+    va, ve = linalg.eigsh(L, k=2, which='LM', sigma=1)
+    #try:
+    #    with open('eigenvector.pickle', 'rb') as handle:
+    #        ve = pickle.load(handle)
+    #        print('Loaded eigenvector from file')
+    #except:
+    #    print('Calculating eigenvector - may take a while.')
+    #    va, ve = linalg.eigsh(L, k=2, which='LM', sigma=0.001)
 
-        with open('eigenvector.pickle', 'wb') as handle:
-            pickle.dump(ve, handle)
+    #    with open('eigenvector.pickle', 'wb') as handle:
+    #        pickle.dump(ve, handle)
     return ve
     
 
 ve = get_eigen_vector(L)
+print('Done!')
 
-#name_vec_list = ()
+name_vec_list = ()
 
-#i = 0
-#for v in ve:
-#    name_vec_list += (v[1].real, names[i]),
-#    i += 1
+i = 0
+for v in ve:
+    name_vec_list += (v[1].real, names[i]),
+    i += 1
 
-#sorted_name_vec = sorted(name_vec_list, key=lambda tup: tup[0])
+sorted_name_vec = sorted(name_vec_list, key=lambda tup: tup[0])
+
+print(sorted_name_vec[0])
+print(sorted_name_vec[-1])
 
 #for pair in sorted_name_vec:
 #    print("Name: ", pair[1], " - Vec: ", pair[0])
 
-#def find_clusters(snv, diff):
-#    curval = snv[0][0]
-#    clusters = []
-#    clusters.append( () )
+def find_clusters(snv, diff):
+    curval = snv[0][0]
+    clusters = []
+    clusters.append( () )
 
-#    i = 0
-#    for pair in snv:
-#        if (curval + diff) < pair[0]:
-#            curval = pair[0]
-#            i += 1
-#            clusters.append( () )
+    i = 0
+    for pair in snv:
+        if (curval + diff) < pair[0]:
+            curval = pair[0]
+            i += 1
+            clusters.append( () )
 
-#        clusters[i] += pair,
+        clusters[i] += pair,
 
-#    return len(clusters), clusters
+    return len(clusters), clusters
 
-#num, clusters = find_clusters(sorted_name_vec, 0.24)
+for val in [0.01, 0.009, 0.008, 0.007, 0.006, 0.005, 0.004, 0.003, 0.001, 0.0009]:
+    num, clusters = find_clusters(sorted_name_vec, val)
+    print("Clusters: ", num, " Diff value: ", val, "\n")
 
-#print("\nClusters: ", num, "\n")
-
-#i = 0
+i = 0
 #for cluster in clusters:
 #    print("Cluster ", i)
 #    i += 1
@@ -138,7 +142,7 @@ ve = get_eigen_vector(L)
 #print(L)
 #i = 0
 #for e in ve:
-#    print(str(e) + ' ' + names[i])
+#    print(str(e) + ' ' + str(names[i]))
 #    i += 1
 
 
