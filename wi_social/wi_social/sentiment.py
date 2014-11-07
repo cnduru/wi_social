@@ -225,7 +225,7 @@ def scoreTest(review):
 #### this is where the fun stuff happens!
 
 # parse reviews
-to_be_reviewed = parse_reviews(3000100, 3000100 + 1000000)
+to_be_reviewed = parse_reviews(3000100, 3000100 + 100000)
 
 #to_be_reviewed = []
 
@@ -242,7 +242,7 @@ voc_2 = {}
 voc_3 = {}
 voc_4 = {}
 voc_5 = {}
-review_list = parse_reviews(1, 3000000)
+review_list = parse_reviews(1, 10000)
 
 total_hits = 0
 cnt = 0
@@ -252,6 +252,7 @@ neu_hits = 0
 tot_pos = 0
 tot_neg = 0
 tot_neu = 0
+scores = []
 total_reviews = len(to_be_reviewed)
 
 # clear screen
@@ -261,20 +262,26 @@ p = Progress(total_reviews, "Computing scores")
 
 for rev in to_be_reviewed:
     score = scoreTest(rev)
+
+    if score not in scores:
+        scores.append(score)
+
     if rev.get_score() in [4, 5]:
         tot_pos +=1
     elif rev.get_score() == 3:
         tot_neu +=1
     elif rev.get_score() in [1,2]:
-        tot_neg += 1
+        tot_neg +=1
 
-    if ((score == 4 or score == 5) and (rev.get_score() == 4 or rev.get_score() == 5)):
+    if (score in [4,5]) and (rev.get_score() in [4, 5]):
         total_hits += 1
         pos_hits +=1
-    elif (score == 3 and rev.get_score() == 3):
+
+    elif score == 3 and rev.get_score() == 3:
         total_hits += 1
         neu_hits +=1
-    elif ((score == 1 or score == 2) and (rev.get_score() == 1 or rev.get_score() == 2)):
+
+    elif (score in [1, 2]) and (rev.get_score() in [1, 2]):
         total_hits += 1
         neg_hits += 1
 
@@ -282,6 +289,6 @@ for rev in to_be_reviewed:
     p.percent(cnt)
 
 print("Hit rate: ", (total_hits/total_reviews)*100, "%")
-print("Pos: ", pos_hits, "/", tot_pos, " (", (tot_pos/pos_hits*100), "%)")
-print("Neg: ", neg_hits, "/", tot_neg, " (", (tot_neg/neg_hits*100), "%)")
-print("Neu: ", neu_hits, "/", tot_neu, " (", (tot_neu/neu_hits*100), "%)")
+print("Pos: ", pos_hits, "/", tot_pos), " (", (pos_hits/tot_pos*100), "%)")
+print("Neg: ", neg_hits, "/", tot_neg), " (", (neg_hits/tot_neg*100), "%)")
+print("Neu: ", neu_hits, "/", tot_neu), " (", (neu_hits/tot_neu*100), "%)")
