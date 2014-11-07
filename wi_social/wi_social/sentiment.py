@@ -27,7 +27,9 @@ class Review:
         self.__count_sentiments()
 
     def __count_sentiments(self):
-        global num_rev_pos, num_rev_neg, voc_pos, voc_neg
+        global num_rev_1, num_rev_2, num_rev_3, num_rev_4, num_rev_5, \
+               voc_1, voc_2, voc_3, voc_4, voc_5
+
         if self.score == 1:
             num_rev_1 += 1
             for word in self.text:
@@ -166,33 +168,33 @@ def prob_word_in_sentiment(word, sentiment):
     global voc_1, voc_2, voc_3, voc_4, voc_5, vocabulary
 
     if sentiment == 1:
-        nc = num_rev_pos
-        if word in voc_pos:
+        nc = num_rev_1
+        if word in voc_1:
             nxc = voc_1[word]
         else:
             nxc = 0 
     elif sentiment == 2:
-        nc = num_rev_neg
+        nc = num_rev_2
         if word in voc_2:
-            nxc = voc_neg[word]
+            nxc = voc_2[word]
         else:
             nxc = 0
     elif sentiment == 3:
-        nc = num_rev_neg
+        nc = num_rev_3
         if word in voc_3:
-            nxc = voc_neg[word]
+            nxc = voc_3[word]
         else:
             nxc = 0
     elif sentiment == 4:
-        nc = num_rev_neg
+        nc = num_rev_4
         if word in voc_4:
-            nxc = voc_neg[word]
+            nxc = voc_4[word]
         else:
             nxc = 0 
     elif sentiment == 5:
-        nc = num_rev_neg
+        nc = num_rev_5
         if word in voc_5:
-            nxc = voc_neg[word]
+            nxc = voc_5[word]
         else:
             nxc = 0
     else:
@@ -211,8 +213,13 @@ def log_score (review, sentiment):
 
 
 def scoreTest(review):
-    res = 1 if log_score(review, 1) > log_score(review, -1) else -1
-
+    res = 0
+    last_val = -1000000 #Just a very small number, so
+    for n in range(1,6):
+        this_val = log_score(review, n)
+        if this_val > last_val:
+            res = n
+            last_val = this_val
     return res
 
 #### this is where the fun stuff happens!
@@ -222,7 +229,7 @@ def scoreTest(review):
 
 to_be_reviewed = []
 
-to_be_reviewed.append(Review(-1, "The WORST coffee !. The worst!!! it is just plan awful bitter and strong and you cannot taste the Hazel Nut flavor at all!!!!!  Do not buy this product save your money!!!!!"))
+to_be_reviewed.append(Review(1, "The WORST coffee !. The worst!!! it is just plan awful bitter and strong and you cannot taste the Hazel Nut flavor at all!!!!!  Do not buy this product save your money!!!!!"))
 
 vocabulary = set()
 num_rev_1 = 0
@@ -235,7 +242,7 @@ voc_2 = {}
 voc_3 = {}
 voc_4 = {}
 voc_5 = {}
-review_list = parse_reviews(1, 1000000)
+review_list = parse_reviews(1, 10000)
 
 total_hits = 0
 cnt = 0
@@ -245,10 +252,14 @@ total_reviews = len(to_be_reviewed)
 print('                                       ', end='\r')
 
 p = Progress(total_reviews, "Computing scores")
+
 for rev in to_be_reviewed:
     score = scoreTest(rev)
-    
-    if(score == rev.get_score()):
+    print("Score: ", score)
+
+    if ((score == 4 or score == 5) and (rev.get_score() == 4 or rev.get_score() == 5)) \
+        or (score == 3 and rev.get_score() == 3) \
+        or ((score == 1 or score == 2) and (rev.get_score() == 1 or rev.get_score() == 2)):
         total_hits += 1
 
     cnt += 1
