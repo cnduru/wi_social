@@ -1,5 +1,5 @@
 from happyfuntokenizing import Tokenizer
-from math import log
+from progressTrack import Progress
 
 vocabulary = set()
 num_rev_1 = 0
@@ -12,6 +12,7 @@ voc_2 = {}
 voc_3 = {}
 voc_4 = {}
 voc_5 = {}
+
 
 class Review:
     t = Tokenizer()
@@ -46,7 +47,7 @@ class Review:
             for word in self.text:
                 if word in voc_3:
                     voc_3[word] += 1
-                else:
+        else:
                     voc_3[word] = 1
         elif self.score == 4:
             num_rev_4 += 1
@@ -94,14 +95,14 @@ class Review:
 
 
     def toString(self):
-        return str(self.score) + ": " +  " ".join(self.text)
+        return str(self.score) + ": " + " ".join(self.text)
 
 
 def parse_reviews(start_line, end_line):
     score = 0
     text = ""
     reviews = []
-    curline = 0
+    cur_line = 0
 
     # clear screen
     print('                    ', end='\r')
@@ -109,17 +110,14 @@ def parse_reviews(start_line, end_line):
     with open('SentimentTrainingData.txt', 'r') as f:
         # start at line start_line
         f.seek(start_line)
-
+        p = Progress(end_line, "Parsing reviews")
         for line in f.readlines():
 
-            curline += 1
-
+            cur_line += 1
+            p.percent(cur_line)
             # make sure we start the right place
-            if(curline < start_line):
+            if cur_line < start_line:
                 continue
-
-            if curline%1000 == 0:
-                print('{0:.2%}'.format(1.0 / (end_line - start_line + 1) * (curline - start_line)), end='\r')
 
             if line[:14] == "review/score: ":
                 score = int(line[14])
@@ -133,7 +131,7 @@ def parse_reviews(start_line, end_line):
                 text = ""
 
                 # end read at line end_line
-                if curline >= end_line:
+                if cur_line >= end_line:
                     break
     return reviews
 
@@ -190,7 +188,7 @@ def prob_word_in_sentiment(word, sentiment):
         if word in voc_4:
             nxc = voc_neg[word]
         else:
-            nxc = 0
+            nxc = 0 
     elif sentiment == 5:
         nc = num_rev_neg
         if word in voc_5:
@@ -203,13 +201,15 @@ def prob_word_in_sentiment(word, sentiment):
 
     return (nxc + 1) / (nc + len(vocabulary))
 
+
 def log_score (review, sentiment):
     pxc = 1
 
     for word in review.get_text():
-        pxc *= prob_word_in_sentiment(word, sentiment) #log(prob_word_in_sentiment(word, sentiment))
+        pxc *= prob_word_in_sentiment(word, sentiment)  #log(prob_word_in_sentiment(word, sentiment))
 
     return prob_sentiment(sentiment) * pxc
+
 
 def scoreTest(review):
     res = 1 if log_score(review, 1) > log_score(review, -1) else -1
@@ -239,12 +239,13 @@ voc_5 = {}
 review_list = parse_reviews(1, 1000000)
 
 total_hits = 0
-cnt = 0;
+cnt = 0
 total_reviews = len(to_be_reviewed)
 
 # clear screen
 print('                                       ', end='\r')
 
+p = Progress(total_reviews, "Computing scores")
 for rev in to_be_reviewed:
     score = scoreTest(rev)
     
@@ -252,6 +253,6 @@ for rev in to_be_reviewed:
         total_hits += 1
 
     cnt += 1
-    print('{0:.2%}'.format(1.0 / total_reviews * cnt), end='\r')
+    p.percent(cnt)
 
 print("Hit rate: ", (total_hits/total_reviews)*100, "%")
