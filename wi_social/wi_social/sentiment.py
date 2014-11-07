@@ -1,7 +1,7 @@
 from happyfuntokenizing import Tokenizer
 from progressTrack import Progress
 
-vocabulary = set()
+#vocabulary = set()
 num_rev_1 = 0
 num_rev_2 = 0
 num_rev_3 = 0
@@ -18,12 +18,12 @@ class Review:
     t = Tokenizer()
 
     def __init__(self, score, text):
-        global vocabulary
+        #global vocabulary
         self.score = score
         self.text = self._negate(self.t.tokenize(text))
 
         # add words from text to global vocabulary
-        vocabulary.union(set(self.text))
+        #vocabulary.union(set(self.text))
         self.__count_sentiments()
 
     def __count_sentiments(self):
@@ -165,7 +165,7 @@ def prob_sentiment(sentiment):
 # returns probability that a certain word has a given sentiment
 # if you are lost, look in slide 29
 def prob_word_in_sentiment(word, sentiment):
-    global voc_1, voc_2, voc_3, voc_4, voc_5, vocabulary
+    global voc_1, voc_2, voc_3, voc_4, voc_5 #, vocabulary
 
     if sentiment == 1:
         nc = num_rev_1
@@ -201,7 +201,7 @@ def prob_word_in_sentiment(word, sentiment):
         print("Error in prob_word_sentiment()!")
         return 0
 
-    return (nxc + 1) / (nc + len(vocabulary))
+    return (nxc + 1) / (nc + len(voc_1) + len(voc_2) + len(voc_3) + len(voc_4) + len(voc_5))
 
 def log_score (review, sentiment):
     pxc = 1
@@ -225,13 +225,13 @@ def scoreTest(review):
 #### this is where the fun stuff happens!
 
 # parse reviews
-#to_be_reviewed = parse_reviews(3000100, 3000100 + 1000000)
+to_be_reviewed = parse_reviews(3000100, 3000100 + 1000000)
 
-to_be_reviewed = []
+#to_be_reviewed = []
 
-to_be_reviewed.append(Review(1, "The WORST coffee !. The worst!!! it is just plan awful bitter and strong and you cannot taste the Hazel Nut flavor at all!!!!!  Do not buy this product save your money!!!!!"))
+#to_be_reviewed.append(Review(1, "The WORST coffee !. The worst!!! it is just plan awful bitter and strong and you cannot taste the Hazel Nut flavor at all!!!!!  Do not buy this product save your money!!!!!"))
 
-vocabulary = set()
+#vocabulary = set()
 num_rev_1 = 0
 num_rev_2 = 0
 num_rev_3 = 0
@@ -242,10 +242,16 @@ voc_2 = {}
 voc_3 = {}
 voc_4 = {}
 voc_5 = {}
-review_list = parse_reviews(1, 10000)
+review_list = parse_reviews(1, 3000000)
 
 total_hits = 0
 cnt = 0
+pos_hits = 0
+neg_hits = 0
+neu_hits = 0
+tot_pos = 0
+tot_neg = 0
+tot_neu = 0
 total_reviews = len(to_be_reviewed)
 
 # clear screen
@@ -255,14 +261,27 @@ p = Progress(total_reviews, "Computing scores")
 
 for rev in to_be_reviewed:
     score = scoreTest(rev)
-    print("Score: ", score)
+    if rev.get_score() in [4, 5]:
+        tot_pos +=1
+    elif rev.get_score() == 3:
+        tot_neu +=1
+    elif rev.get_score() in [1,2]:
+        tot_neg += 1
 
-    if ((score == 4 or score == 5) and (rev.get_score() == 4 or rev.get_score() == 5)) \
-        or (score == 3 and rev.get_score() == 3) \
-        or ((score == 1 or score == 2) and (rev.get_score() == 1 or rev.get_score() == 2)):
+    if ((score == 4 or score == 5) and (rev.get_score() == 4 or rev.get_score() == 5)):
         total_hits += 1
+        pos_hits +=1
+    elif (score == 3 and rev.get_score() == 3):
+        total_hits += 1
+        neu_hits +=1
+    elif ((score == 1 or score == 2) and (rev.get_score() == 1 or rev.get_score() == 2)):
+        total_hits += 1
+        neg_hits += 1
 
     cnt += 1
     p.percent(cnt)
 
 print("Hit rate: ", (total_hits/total_reviews)*100, "%")
+print("Pos: ", pos_hits, "/", tot_pos, " (", (tot_pos/pos_hits*100), "%)")
+print("Neg: ", neg_hits, "/", tot_neg, " (", (tot_neg/neg_hits*100), "%)")
+print("Neu: ", neu_hits, "/", tot_neu, " (", (tot_neu/neu_hits*100), "%)")
