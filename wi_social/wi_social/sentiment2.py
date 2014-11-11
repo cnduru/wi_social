@@ -2,6 +2,10 @@ from happyfuntokenizing import Tokenizer
 from progressTrack import Progress
 from math import log
 
+num_rev = {}
+voc = {}
+voclength = 0
+
 class Review:
     t = Tokenizer()
 
@@ -31,8 +35,7 @@ class Review:
         return new_text
 
 def count_sentiments(reviews):
-    num_rev = {}
-    voc = {}
+    global num_rev, voc, voclength
 
     for x in range(1,6):
         num_rev[x] = 0
@@ -46,7 +49,15 @@ def count_sentiments(reviews):
                 voc[review.score][word] += 1
             else:
                 voc[review.score][word] = 1
-    return num_rev, voc
+
+    fullvoc = set()
+
+    for x in range(1,6):
+        fullvoc = fullvoc.union(set(voc[x].keys()))
+
+    voclength = len(fullvoc)
+
+    #return num_rev, voc, voclength
 
 def parse_reviews(start_line, end_line):
     score = 0
@@ -85,52 +96,47 @@ def parse_reviews(start_line, end_line):
                     break
     return reviews
 
-def prob_sentiment(sentiment, num_rev):
+def prob_sentiment(sentiment):
+    global num_rev
     n = sum(num_rev.values())
     nc = num_rev[sentiment]
     return (nc + 1)/(n + 5)
 
-def prob_word_in_sentiment(word, sentiment, num_rev, voc):
+def prob_word_in_sentiment(word, sentiment):
+    global num_rev, voc, voclength
     nc = num_rev[sentiment]
     if word in voc[sentiment]:
         nxc = voc[sentiment][word]
     else:
         nxc = 0
 
-    fullvoc = set()
-
-    for x in range(1,6):
-        fullvoc.union(set(voc[x].keys()))
-
-    return (nxc + 1)/ (nc + len(fullvoc))
+    return (nxc + 1)/ (nc + voclength)
 
 
-def log_score (review, sentiment, num_rev, voc):
+def log_score (review, sentiment):
     pxc = 0
 
     for word in review.text:
-        pxc += log(prob_word_in_sentiment(word, sentiment, num_rev, voc))
+        pxc += log(prob_word_in_sentiment(word, sentiment))
 
-    return log(prob_sentiment(sentiment, num_rev)) + pxc
+    return log(prob_sentiment(sentiment)) + pxc
 
-def calcscore(review, num_rev, voc):
+def scoreTest(review):
 
     lst = []
 
     for n in range(1,6):
-        this_val = log_score(review, n, num_rev, voc)
+        this_val = log_score(review, n)
         lst.append(this_val)
 
     return lst.index(max(lst)) + 1
 
-def scoreTest(review):
-    global num_rev, voc
-    return calcscore(review, num_rev, voc)
-
 revs = parse_reviews(1, 2000000)
-to_be_reviewed = parse_reviews(4500000, 10000000)
+count_sentiments(revs)
 
-num_rev, voc = count_sentiments(revs)
+to_be_reviewed = parse_reviews(2000000, 2500000)
+
+
 
 #test_revs = [Review("The WORST coffee !. The worst!!! it is just plan awful bitter and strong and you cannot taste the Hazel Nut flavor at all!!!!!  Do not buy this product save your money!!!!!")]
 
