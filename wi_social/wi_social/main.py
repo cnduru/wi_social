@@ -193,7 +193,7 @@ num, clusters = find_clusters(sorted_name_vec, 0.005)
 
 for person in p_dict:
     if p_dict[person].review:
-       p_dict[person].score = sentiment.scoreTest(sentiment.Review(3, p_dict[person].review))
+       p_dict[person].score = sentiment.scoreTest(p_dict[person].review)
 
 avg_score = []
 for person in p_dict:

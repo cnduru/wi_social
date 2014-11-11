@@ -206,7 +206,7 @@ def prob_word_in_sentiment(word, sentiment):
 def log_score (review, sentiment):
     pxc = 1
 
-    for word in review.get_text():
+    for word in review.split():
         pxc *= prob_word_in_sentiment(word, sentiment)  #log(prob_word_in_sentiment(word, sentiment))
 
     return prob_sentiment(sentiment) * pxc
@@ -242,7 +242,7 @@ def scoreTest(review):
 #voc_3 = {}
 #voc_4 = {}
 #voc_5 = {}
-review_list = parse_reviews(1, 500000)
+review_list = parse_reviews(1, 100000)
 
 #total_hits = 0
 #cnt = 0
