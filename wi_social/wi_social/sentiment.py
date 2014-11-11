@@ -1,5 +1,6 @@
 from happyfuntokenizing import Tokenizer
 from progressTrack import Progress
+from math import log
 
 #vocabulary = set()
 num_rev_1 = 0
@@ -204,23 +205,25 @@ def prob_word_in_sentiment(word, sentiment):
     return (nxc + 1) / (nc + len(voc_1) + len(voc_2) + len(voc_3) + len(voc_4) + len(voc_5))
 
 def log_score (review, sentiment):
-    pxc = 1
+    pxc = 0
 
     for word in review.split():
-        pxc *= prob_word_in_sentiment(word, sentiment)  #log(prob_word_in_sentiment(word, sentiment))
+        pxc += log(prob_word_in_sentiment(word, sentiment))  #log(prob_word_in_sentiment(word, sentiment))
 
-    return prob_sentiment(sentiment) * pxc
+    return log(prob_sentiment(sentiment)) + pxc
 
 
 def scoreTest(review):
     res = 0
+    lst = []
     last_val = -1000000 #Just a very small number, so
     for n in range(1,6):
         this_val = log_score(review, n)
+        lst.append(this_val)
         if this_val > last_val:
             res = n
             last_val = this_val
-    return res
+    return res, lst
 
 #### this is where the fun stuff happens!
 
@@ -243,7 +246,8 @@ def scoreTest(review):
 #voc_4 = {}
 #voc_5 = {}
 review_list = parse_reviews(1, 100000)
-
+kyle_score, kyle_scores = scoreTest("The WORST coffee !. The worst!!! it is just plan awful bitter and strong and you cannot taste the Hazel Nut flavor at all!!!!!  Do not buy this product save your money!!!!!")
+print("kyle:", kyle_score, str(kyle_scores))
 #total_hits = 0
 #cnt = 0
 #pos_hits = 0
