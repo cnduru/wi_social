@@ -66,58 +66,91 @@ p_dict = bar()
 
 names = sorted(p_dict.keys())#[:10]
 
-matrix = []
-for user in names:
-    matrix.append([])
-    for friend in names:
-        if friend in p_dict[user].friends:
-            matrix[-1].append(1)
-        else:
-            matrix[-1].append(0)
+#matrix = []
+#for user in names:
+#    matrix.append([])
+#    for friend in names:
+#        if friend in p_dict[user].friends:
+#            matrix[-1].append(1)
+#        else:
+#            matrix[-1].append(0)
 
 
-def calc_laplacian(A):
-    for i in range(len(A)):
-        A[i] = list(map(lambda x: float(-x), A[i]))
-        A[i][i] = float(sum(A[i]) * -1)
-    return A
+#def calc_laplacian(A):
+#    for i in range(len(A)):
+#        A[i] = list(map(lambda x: float(-x), A[i]))
+#        A[i][i] = float(sum(A[i]) * -1)
+#    return A
 
 
-print("Created matrix.")
-A = matrix
-#A = [[0, 1, 1, 0, 0, 0, 0, 0, 0],
-#    [1, 0, 1, 0, 0, 0, 0, 0, 0],
-#    [1, 1, 0, 1, 1, 0, 0, 0, 0],
-#    [0, 0, 1, 0, 1, 1, 1, 0, 0],
-#    [0, 0, 1, 1, 0, 1, 1, 0, 0],
-#    [0, 0, 0, 1, 1, 0, 1, 1, 0],
-#    [0, 0, 0, 1, 1, 1, 0, 1, 0],
-#    [0, 0, 0, 0, 0, 1, 1, 0, 1],
-#    [0, 0, 0, 0, 0, 0, 0, 1, 0]]
-L = calc_laplacian(A)
-L = np.array(L)
-print("Created A.")
+#print("Created matrix.")
+#A = matrix
+##A = [[0, 1, 1, 0, 0, 0, 0, 0, 0],
+##    [1, 0, 1, 0, 0, 0, 0, 0, 0],
+##    [1, 1, 0, 1, 1, 0, 0, 0, 0],
+##    [0, 0, 1, 0, 1, 1, 1, 0, 0],
+##    [0, 0, 1, 1, 0, 1, 1, 0, 0],
+##    [0, 0, 0, 1, 1, 0, 1, 1, 0],
+##    [0, 0, 0, 1, 1, 1, 0, 1, 0],
+##    [0, 0, 0, 0, 0, 1, 1, 0, 1],
+##    [0, 0, 0, 0, 0, 0, 0, 1, 0]]
+#L = calc_laplacian(A)
+#L = np.array(L)
+#print("Created A.")
 
 
 print("Computed eigen-stuff")
 
 
-def get_eigen_vector(L):
-    va, ve = linalg.eigsh(L, k=2, which='LM', sigma=1)
-    #try:
-    #    with open('eigenvector.pickle', 'rb') as handle:
-    #        ve = pickle.load(handle)
-    #        print('Loaded eigenvector from file')
-    #except:
-    #    print('Calculating eigenvector - may take a while.')
-    #    va, ve = linalg.eigsh(L, k=2, which='LM', sigma=0.001)
+def get_eigen_vector():
+    #va, ve = linalg.eigsh(L, k=2, which='LM', sigma=1)
+    try:
+        with open('eigenvector.pickle', 'rb') as handle:
+            ve = pickle.load(handle)
+            print('Loaded eigenvector from file')
+    except:
+        matrix = []
+        for user in names:
+            matrix.append([])
+            for friend in names:
+                if friend in p_dict[user].friends:
+                    matrix[-1].append(1)
+                else:
+                    matrix[-1].append(0)
 
-    #    with open('eigenvector.pickle', 'wb') as handle:
-    #        pickle.dump(ve, handle)
+
+        def calc_laplacian(A):
+            for i in range(len(A)):
+                A[i] = list(map(lambda x: float(-x), A[i]))
+                A[i][i] = float(sum(A[i]) * -1)
+            return A
+
+
+        print("Created matrix.")
+        A = matrix
+        #A = [[0, 1, 1, 0, 0, 0, 0, 0, 0],
+        #    [1, 0, 1, 0, 0, 0, 0, 0, 0],
+        #    [1, 1, 0, 1, 1, 0, 0, 0, 0],
+        #    [0, 0, 1, 0, 1, 1, 1, 0, 0],
+        #    [0, 0, 1, 1, 0, 1, 1, 0, 0],
+        #    [0, 0, 0, 1, 1, 0, 1, 1, 0],
+        #    [0, 0, 0, 1, 1, 1, 0, 1, 0],
+        #    [0, 0, 0, 0, 0, 1, 1, 0, 1],
+        #    [0, 0, 0, 0, 0, 0, 0, 1, 0]]
+        L = calc_laplacian(A)
+        L = np.array(L)
+        print("Created A.")
+
+
+        print('Calculating eigenvector - may take a while.')
+        va, ve = linalg.eigsh(L, k=2, which='LM', sigma=1)
+
+        with open('eigenvector.pickle', 'wb') as handle:
+            pickle.dump(ve, handle)
     return ve
     
 
-ve = get_eigen_vector(L)
+ve = get_eigen_vector()
 print('Done!')
 
 name_vec_list = ()
@@ -168,7 +201,7 @@ find_clusters(sorted_name_vec)
 
 for person in p_dict:
     if p_dict[person].review:
-       p_dict[person].score = sentiment.scoreTest(sentiment.Review(3, p_dict[person].review))
+       p_dict[person].score = sentiment.scoreTest(p_dict[person].review)
 
 avg_score = []
 for person in p_dict:
@@ -193,7 +226,16 @@ for person in p_dict:
         print(person, "bought things.")
 
 
-
+with open('result.txt', 'w+') as f:
+    for person in p_dict:
+        p = p_dict[person]
+        res = ""
+        if p.review:
+            res = p.name + "\t" + str(p.score) + "\t*\r\n"
+        else:
+            buy = "yes" if p.buy else "no"
+            res = p.name + "\t*\t" + buy + "\r\n"
+        f.write(res)
 
 diff = cluster(sorted_name_vec)
 print("sorted by abs")
