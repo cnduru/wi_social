@@ -32,6 +32,7 @@
     <Compile Include="sentiment.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="sentiment2.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="friendships.reviews.txt" />
