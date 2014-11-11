@@ -69,6 +69,10 @@ def parse_reviews(start_line, end_line):
     print('                    ', end='\r')
 
     with open('SentimentTrainingData.txt', 'r') as f:
+        #update end_line
+        if end_line > len(f.readlines()):
+            end_line = len(f.readlines())
+
         # start at line start_line
         f.seek(start_line)
         p = Progress(end_line, "Parsing reviews")
@@ -110,7 +114,7 @@ def prob_word_in_sentiment(word, sentiment):
     else:
         nxc = 0
 
-    return (nxc + 1)/ (nc + voclength)
+    return (nxc + 1)/(nc + voclength)
 
 
 def log_score (review, sentiment):
@@ -131,10 +135,10 @@ def scoreTest(review):
 
     return lst.index(max(lst)) + 1
 
-revs = parse_reviews(1, 2000000)
+revs = parse_reviews(1, 1000000)
 count_sentiments(revs)
 
-to_be_reviewed = parse_reviews(2000000, 2500000)
+to_be_reviewed = parse_reviews(2000000, 2005000)
 
 
 
