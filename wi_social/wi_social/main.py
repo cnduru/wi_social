@@ -4,14 +4,16 @@ import pickle
 import sentiment
 
 class Person:
-    score = -1
-    buy = False
-    cluster = -1
 
     def __init__(self, name, friends, review):
         self.name = name
         self.friends = friends
         self.review = review
+
+        self.score = -1
+        self.buy = False
+        self.cluster = -1
+
 
 
 def foo():
@@ -133,28 +135,34 @@ print(sorted_name_vec[-1])
 #for pair in sorted_name_vec:
 #    print("Name: ", pair[1], " - Vec: ", pair[0])
 
-def find_clusters(snv, diff):
-    curval = snv[0][0]
-    clusters = []
-    clusters.append( () )
 
-    i = 0
-    for pair in snv:
-        if (curval + diff) < pair[0]:
-            curval = pair[0]
-            i += 1
-            clusters.append( () )
+def cluster(snv):
+    diffs = []
+    for i in range(len(snv)-1):
+        diffs.append((snv[i+1][0]-snv[i][0],
+                      (snv[i+1][0]-snv[i][0])/snv[i+1][0]*100,
+                      i,
+                      i+1,
+                      snv[i],
+                      snv[i+1]))
+    return diffs
 
-        clusters[i] += pair,
-        p_dict[pair[1]].cluster = i
 
-    return len(clusters), clusters
+def find_clusters(snv):
+    c = 0
+    for i in range(len(snv)-1):
+        if (snv[i+1][0]-snv[i][0])/snv[i+1][0]*100 > 50 and (snv[i+1][0]-snv[i][0])/snv[i+1][0]*100 < 100:
+            c += 1
+        p_dict[snv[i][1]].cluster = c
+    p_dict[snv[-1][1]].cluster = c
+    print("Clusters:", c)
+
 
 #for val in [0.01, 0.009, 0.008, 0.007, 0.006, 0.005, 0.004, 0.003, 0.001, 0.0009]:
 #    num, clusters = find_clusters(sorted_name_vec, val)
 #    print("Clusters: ", num, " Diff value: ", val, "\n")
 
-num, clusters = find_clusters(sorted_name_vec, 0.005)
+find_clusters(sorted_name_vec)
 
 
 
@@ -187,8 +195,13 @@ for person in p_dict:
 
 
 
-
-
+diff = cluster(sorted_name_vec)
+print("sorted by abs")
+for e in list(sorted(diff, key=lambda tup: 0-tup[0]))[:10]:
+    print(e)
+print("sorted by %")
+for e in list(sorted(diff, key=lambda tup: 0-tup[1]))[:10]:
+    print(e)
 
 #i = 0
 #for cluster in clusters:
