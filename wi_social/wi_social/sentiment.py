@@ -242,7 +242,7 @@ def scoreTest(review):
 #voc_3 = {}
 #voc_4 = {}
 #voc_5 = {}
-review_list = parse_reviews(1, 100000)
+review_list = parse_reviews(1, 500000)
 
 #total_hits = 0
 #cnt = 0
