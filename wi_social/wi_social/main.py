@@ -13,6 +13,7 @@ class Person:
         self.score = -1
         self.buy = False
         self.cluster = -1
+        self.friendScore = -1
 
 
 
@@ -203,9 +204,10 @@ for person in p_dict:
     if p_dict[person].review:
        p_dict[person].score = sentiment.scoreTest(p_dict[person].review)
 
-avg_score = []
+buy_count = 0
 for person in p_dict:
     if not p_dict[person].review:
+        avg_score = []
         for friend in p_dict[person].friends:
             if not friend in p_dict:
                 continue
@@ -218,9 +220,11 @@ for person in p_dict:
                     significance *= 10
                 for x in range(0, significance):
                     avg_score.append(p_dict[friend].score)
-        if sum(avg_score)/len(avg_score) >= 4.8:
+        if avg_score and sum(avg_score)/len(avg_score) >= 4.8:
             p_dict[person].buy = True
-
+            buy_count += 1
+        if avg_score:
+            p_dict[person].friendScore = sum(avg_score)/len(avg_score)
 for person in p_dict:
     if p_dict[person].buy:
         print(person, "bought things.")
@@ -237,13 +241,18 @@ with open('result.txt', 'w+') as f:
             res = p.name + "\t*\t" + buy + "\r\n"
         f.write(res)
 
-diff = cluster(sorted_name_vec)
-print("sorted by abs")
-for e in list(sorted(diff, key=lambda tup: 0-tup[0]))[:10]:
-    print(e)
-print("sorted by %")
-for e in list(sorted(diff, key=lambda tup: 0-tup[1]))[:10]:
-    print(e)
+# print("sorted by friends score")
+# for person in list(sorted(p_dict.values(), key=lambda p: p.friendScore)):
+#     print(person.friendScore, person.name)
+print("buy count:", buy_count)
+
+# diff = cluster(sorted_name_vec)
+# print("sorted by abs")
+# for e in list(sorted(diff, key=lambda tup: 0-tup[0]))[:10]:
+#     print(e)
+# print("sorted by %")
+# for e in list(sorted(diff, key=lambda tup: 0-tup[1]))[:10]:
+#     print(e)
 
 #i = 0
 #for cluster in clusters:
@@ -260,10 +269,6 @@ for e in list(sorted(diff, key=lambda tup: 0-tup[1]))[:10]:
 #    print(str(e) + ' ' + str(names[i]))
 #    i += 1
 
-
-
-
-
 # s = set()
 # for k in di.keys():
 # s = s.union(set(di[k]))
@@ -272,3 +277,4 @@ for e in list(sorted(diff, key=lambda tup: 0-tup[1]))[:10]:
 # print(len(di))
 #
 # print(s.difference(set(di.keys())))
+
