@@ -139,8 +139,8 @@ def scoreTest(review):
     return max(dct.items(), key=operator.itemgetter(1))[0]
 
 
-parse = 4000000
-ctrl = parse + parse / 2
+parse = 400000
+ctrl = parse + parse / 10
 
 revs = parse_reviews(1, parse)
 count_sentiments(revs)
