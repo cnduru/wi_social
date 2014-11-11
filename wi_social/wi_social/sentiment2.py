@@ -113,7 +113,7 @@ def log_score (review, sentiment, num_rev, voc):
 
     return log(prob_sentiment(sentiment, num_rev)) + pxc
 
-def score(review, num_rev, voc):
+def calcscore(review, num_rev, voc):
 
     lst = []
 
@@ -125,7 +125,7 @@ def score(review, num_rev, voc):
 
 def scoreTest(review):
     global num_rev, voc
-    return score(review, num_rev, voc)
+    return calcscore(review, num_rev, voc)
 
 revs = parse_reviews(1, 2000000)
 to_be_reviewed = parse_reviews(4500000, 10000000)
