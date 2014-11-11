@@ -225,70 +225,70 @@ def scoreTest(review):
 #### this is where the fun stuff happens!
 
 # parse reviews
-to_be_reviewed = parse_reviews(3000100, 3000100 + 100000)
+#to_be_reviewed = parse_reviews(3000100, 3000100 + 100000)
 
 #to_be_reviewed = []
 
 #to_be_reviewed.append(Review(1, "The WORST coffee !. The worst!!! it is just plan awful bitter and strong and you cannot taste the Hazel Nut flavor at all!!!!!  Do not buy this product save your money!!!!!"))
 
 #vocabulary = set()
-num_rev_1 = 0
-num_rev_2 = 0
-num_rev_3 = 0
-num_rev_4 = 0
-num_rev_5 = 0
-voc_1 = {}
-voc_2 = {}
-voc_3 = {}
-voc_4 = {}
-voc_5 = {}
-review_list = parse_reviews(1, 10000)
+#num_rev_1 = 0
+#num_rev_2 = 0
+#num_rev_3 = 0
+#num_rev_4 = 0
+#num_rev_5 = 0
+#voc_1 = {}
+#voc_2 = {}
+#voc_3 = {}
+#voc_4 = {}
+#voc_5 = {}
+review_list = parse_reviews(1, 100000)
 
-total_hits = 0
-cnt = 0
-pos_hits = 0
-neg_hits = 0
-neu_hits = 0
-tot_pos = 0
-tot_neg = 0
-tot_neu = 0
-scores = []
-total_reviews = len(to_be_reviewed)
+#total_hits = 0
+#cnt = 0
+#pos_hits = 0
+#neg_hits = 0
+#neu_hits = 0
+#tot_pos = 0
+#tot_neg = 0
+#tot_neu = 0
+#scores = []
+#total_reviews = len(to_be_reviewed)
 
-# clear screen
-print('                                       ', end='\r')
+## clear screen
+#print('                                       ', end='\r')
 
-p = Progress(total_reviews, "Computing scores")
+#p = Progress(total_reviews, "Computing scores")
 
-for rev in to_be_reviewed:
-    score = scoreTest(rev)
+#for rev in to_be_reviewed:
+#    score = scoreTest(rev)
 
-    if score not in scores:
-        scores.append(score)
+#    if score not in scores:
+#        scores.append(score)
 
-    if rev.get_score() in [4, 5]:
-        tot_pos +=1
-    elif rev.get_score() == 3:
-        tot_neu +=1
-    elif rev.get_score() in [1,2]:
-        tot_neg +=1
+#    if rev.get_score() in [4, 5]:
+#        tot_pos +=1
+#    elif rev.get_score() == 3:
+#        tot_neu +=1
+#    elif rev.get_score() in [1,2]:
+#        tot_neg +=1
 
-    if (score in [4,5]) and (rev.get_score() in [4, 5]):
-        total_hits += 1
-        pos_hits +=1
+#    if (score in [4,5]) and (rev.get_score() in [4, 5]):
+#        total_hits += 1
+#        pos_hits +=1
 
-    elif score == 3 and rev.get_score() == 3:
-        total_hits += 1
-        neu_hits +=1
+#    elif score == 3 and rev.get_score() == 3:
+#        total_hits += 1
+#        neu_hits +=1
 
-    elif (score in [1, 2]) and (rev.get_score() in [1, 2]):
-        total_hits += 1
-        neg_hits += 1
+#    elif (score in [1, 2]) and (rev.get_score() in [1, 2]):
+#        total_hits += 1
+#        neg_hits += 1
 
-    cnt += 1
-    p.percent(cnt)
+#    cnt += 1
+#    p.percent(cnt)
 
-print("Hit rate: ", (total_hits/total_reviews)*100, "%")
-print("Pos: ", pos_hits, "/", tot_pos), " (", (pos_hits/tot_pos*100), "%)")
-print("Neg: ", neg_hits, "/", tot_neg), " (", (neg_hits/tot_neg*100), "%)")
-print("Neu: ", neu_hits, "/", tot_neu), " (", (neu_hits/tot_neu*100), "%)")
+#print("Hit rate: ", (total_hits/total_reviews)*100, "%")
+#print("Pos: ", pos_hits, "/", tot_pos, " (", (pos_hits/tot_pos*100), "%)")
+#print("Neg: ", neg_hits, "/", tot_neg, " (", (neg_hits/tot_neg*100), "%)")
+#print("Neu: ", neu_hits, "/", tot_neu, " (", (neu_hits/tot_neu*100), "%)")

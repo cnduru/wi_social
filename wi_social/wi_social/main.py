@@ -1,12 +1,23 @@
 from scipy.sparse import linalg
 import numpy as np
 import pickle
+import sentiment
+
+class Person:
+    score = -1
+    buy = False
+    cluster = -1
+
+    def __init__(self, name, friends, review):
+        self.name = name
+        self.friends = friends
+        self.review = review
 
 
 def foo():
     users = []
     res = []
-    with open('friendships.txt', 'r') as f:
+    with open('friendships.reviews.txt', 'r') as f:
         for line in f.readlines():
             if line.count('user:') and len(line.split()) > 2:
                 users.append(line[6:-1])
@@ -23,29 +34,41 @@ def foo():
 
 def bar():
     """ Hej """
-    d = {}
+    persondict = {}
     with open('tmp.txt', 'r') as f:
         cur_user = ''
+        friends = []
+        review = ''
+
         for line in f.readlines():
             if line.count('user:'):
                 cur_user = line[6:-1]
             elif line.count('friends:'):
-                d[cur_user] = line[9:-1].split()
+                friends = line[9:-1].split()
+            elif line.count('summary:'):
+                if line[9:-1] == '*':
+                    review = False
+                else:
+                    review = line[9:-1] + '. '
+            elif line.count('review:'):
+                if review:
+                    review += line[8:-1]
+            persondict[cur_user] = Person(cur_user, friends, review)
 
-    return d
+    return persondict
 
 
 foo()
-di = bar()
+p_dict = bar()
 #names = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-names = sorted(di.keys())#[:2000]
+names = sorted(p_dict.keys())#[:10]
 
 matrix = []
 for user in names:
     matrix.append([])
     for friend in names:
-        if friend in di[user]:
+        if friend in p_dict[user].friends:
             matrix[-1].append(1)
         else:
             matrix[-1].append(0)
@@ -123,14 +146,51 @@ def find_clusters(snv, diff):
             clusters.append( () )
 
         clusters[i] += pair,
+        p_dict[pair[1]].cluster = i
 
     return len(clusters), clusters
 
-for val in [0.01, 0.009, 0.008, 0.007, 0.006, 0.005, 0.004, 0.003, 0.001, 0.0009]:
-    num, clusters = find_clusters(sorted_name_vec, val)
-    print("Clusters: ", num, " Diff value: ", val, "\n")
+#for val in [0.01, 0.009, 0.008, 0.007, 0.006, 0.005, 0.004, 0.003, 0.001, 0.0009]:
+#    num, clusters = find_clusters(sorted_name_vec, val)
+#    print("Clusters: ", num, " Diff value: ", val, "\n")
 
-i = 0
+num, clusters = find_clusters(sorted_name_vec, 0.005)
+
+
+
+for person in p_dict:
+    if p_dict[person].review:
+       p_dict[person].score = sentiment.scoreTest(sentiment.Review(3, p_dict[person].review))
+
+avg_score = []
+for person in p_dict:
+    if not p_dict[person].review:
+        for friend in p_dict[person].friends:
+            if not friend in p_dict:
+                continue
+
+            significance = 1
+            if p_dict[friend].score != -1:
+                if p_dict[friend].name == 'kyle':
+                    significance *= 10
+                if p_dict[friend].cluster != p_dict[person].cluster:
+                    significance *= 10
+                for x in range(0, significance):
+                    avg_score.append(p_dict[friend].score)
+        if sum(avg_score)/len(avg_score) >= 4.8:
+            p_dict[person].buy = True
+
+for person in p_dict:
+    if p_dict[person].buy:
+        print(person, "bought things.")
+
+
+
+
+
+
+
+#i = 0
 #for cluster in clusters:
 #    print("Cluster ", i)
 #    i += 1

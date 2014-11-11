@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ebef49d5-bf04-4293-9d5e-41f974b28c44</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>sentiment.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -34,6 +34,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="friendships.reviews.txt" />
     <Content Include="friendships.txt" />
     <Content Include="SentimentTrainingData.txt" />
   </ItemGroup>
