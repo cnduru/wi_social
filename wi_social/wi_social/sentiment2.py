@@ -12,10 +12,6 @@ class Review:
     t = Tokenizer()
 
     def __init__(self, text, score=0):
-        if score in [1, 2]:
-            score = 1
-        elif score in [4, 5]:
-            score = 5
         self.score = score
         self.text = self._negate(self.t.tokenize(text))
 
@@ -120,7 +116,7 @@ def prob_word_in_sentiment(word, sentiment):
         nxc = voc[sentiment][word]
     else:
         nxc = 0
-    val = (nxc + 1) / (nc + (len(voc[sentiment]) / 20))
+    val = (nxc + 1) / (nc + (len(voc[sentiment])/3))  #TODO Figure out how this magic works
     return val
 
 
@@ -136,15 +132,15 @@ def log_score(review, sentiment):
 def scoreTest(review):
     dct = {}
 
-    for n in [5, 1]:
+    for n in [5, 4, 3, 2, 1]:
         this_val = log_score(review, n)
         dct[n] = this_val
 
     return max(dct.items(), key=operator.itemgetter(1))[0]
 
 
-parse = 1000000
-ctrl = parse + parse / 10
+parse = 4000000
+ctrl = parse + parse / 2
 
 revs = parse_reviews(1, parse)
 count_sentiments(revs)
